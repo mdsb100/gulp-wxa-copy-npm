@@ -102,8 +102,96 @@ const gwcn = {
             libs.push(lib);
         });
 
-        for (var i = 0 ; ;i++) {
-            Things[i]
+        for (let i = 0; i < libs.length; i++) {
+            let lib = libs[i];
+            if (err) {
+                return '';
+            }
+            let ext = '';
+
+            let resolved = lib;
+
+            let dep;
+
+            let relative = '';
+            console.log('lib', lib);
+
+            if (lib == '../core-js/symbol/iterator') {
+                let ttt = 111;
+            }
+
+            if (lib[0] === '.') { // require('./something'');
+                if (!isNPM) {
+                    continue;
+                }
+                ext = '.js';
+                dep = path.join(currentNodeSrcDir, lib);
+                relative = '';
+            } else if (lib.indexOf('/') === -1 || lib.indexOf('/') === lib.length - 1) { // require('asset');
+                let pkg = this.getPkgConfig(lib, this.gulp.enc);
+                if (!pkg) {
+                    err = new gutil.PluginError('gulp-wxa-copy-npm', 'Package not found:' + lib);
+                    break;
+                }
+                ext = pkg.main || 'index.js';
+                if (pkg.browser && typeof pkg.browser === 'string') {
+                    ext = pkg.browser;
+                }
+                dep = path.join(this.src_node_modules_dir(), lib);
+                relative = path.relative(destDir, dest_node_modules_dir);
+            } else { // require('babel-runtime/regenerator')
+                dep = path.join(this.src_node_modules_dir(), lib);
+                if (this.isDir(dep) && this.isFile(dep + path.sep + 'index.js')) {
+                    ext = path.sep + 'index.js';
+                } else if (this.isFile(dep + '.js')) {
+                    ext = '.js';
+                } else if (this.isFile(dep)) {
+                    ext = '';
+                } else {
+                    err = new gutil.PluginError('gulp-wxa-copy-npm', 'File not found:' + dep);
+                    break;
+                }
+                relative = path.relative(destDir, dest_node_modules_dir);
+            }
+            resolved = path.join(relative, lib+ext);
+
+            if (lib != resolved) {
+                config['gwcn-log'] && gutil.log(`Replace file: ${destDir} depences: from(${chalk.cyan(lib)}) to(${chalk.cyan(resolved)})`);
+            }
+
+            let npmPathString = dep + ext;
+            let npmPath = path.parse(npmPathString);
+            if (this.cache[destPath]) {
+                code = code.replace(lib, resolved);
+                continue;
+            }
+
+            let depCode = fs.readFileSync(npmPathString, {
+                encoding: this.gulp.enc
+            });
+
+            let outPath = path.join(this.currentDir, config['gwcn-dest'], dest_node_modules_dir_name, npmPathString.replace(this.src_node_modules_dir(), ''));
+            config['gwcn-log'] && gutil.log(`Copy npm depences: from(${chalk.cyan(npmPathString)}) to(${chalk.cyan(outPath)}) ...`);
+            console.log('outPath', outPath)
+            console.log('resolved', resolved)
+
+            code = code.replace(lib, resolved);
+
+            if (resolved.indexOf('symbol.js') > -1 || lib.indexOf('symbol.js') > -1 || code.indexOf('symbol.js') > -1) {
+                var aaa = 333;
+            }
+
+            err = this.copyNPMDeps(depCode, outPath, npmPath.dir, true).err;
+        }
+
+        if (isNPM && !this.cache[destPath]) {
+            code = this.npmHack(path.parse(destPath).base, code);
+            code = this.fixNPM(code);
+            code = this.doPlugins(code, destPath);
+            fse.outputFileSync(destPath, code, {
+                encoding: this.gulp.enc
+            });
+            this.cache[destPath] = true;
         }
 
         return {
@@ -120,13 +208,13 @@ const gwcn = {
         }
         return pkg;
     },
-    doPlugins: function(depCode, npmPathString) {
+    doPlugins: function(depCode, destPath) {
         let result = depCode;
         let plugins = config.plugins;
         if (config.plugins) {
             for (let i = 0; i < plugins.length; i++) {
                 let plugin = plugins[i];
-                result = plugin(result, npmPathString, gwcn.gulp);
+                result = plugin(result, destPath, gwcn.gulp);
             }
         }
         return result;
