@@ -1,0 +1,30 @@
+{
+  "name": "gulp-wxa-copy-npm",
+  "version": "1.0.0",
+  "description": "微信小程序gulp插件，解决npm包管理和babel-runtime",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdsb100/gulp-wxa-copy-npm.git"
+  },
+  "keywords": [
+    "wechat-app",
+    "little-app",
+    "微信小程序"
+  ],
+  "author": "曹俊",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mdsb100/gulp-wxa-copy-npm/issues"
+  },
+  "homepage": "https://github.com/mdsb100/gulp-wxa-copy-npm#readme",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "fs-extra": "^2.0.0",
+    "gulp-util": "^3.0.8",
+    "through2": "^2.0.3"
+  }
+}
