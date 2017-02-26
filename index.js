@@ -5,7 +5,7 @@ const fs = require('fs');
 const fse = require('fs-extra');
 const chalk = require("chalk");
 const requireReg = /require\(['"]([\w\d_\-\.\/]+)['"]\)/ig;
-const dest_node_modules_dir_name = 'modules';
+const dest_node_modules_dir_name = 'gwcn-modules';
 
 let config = {
     'gwcn-src': 'src',
@@ -59,6 +59,13 @@ const gwcn = {
         return path.join(this.srcDir(), config['gwcn-node_modules']);
     },
 
+    fixGlobalAndWindow: function(code) {
+        if (/global|window/.test(code)) {
+            code = "var global=window=require('gulp-wxa-copy-npm/global');" + code;
+        }
+        return code;
+    },
+
     fixNPM: function(code) {
         code = code.replace(/([\w\[\]a-d\.]+)\s*instanceof Function/g, function(matchs, word) {
             return ' typeof ' + word + " ==='function' ";
@@ -68,12 +75,9 @@ const gwcn = {
         if (/[^\w_]process\.\w/.test(code) && !/typeof process/.test(code)) {
             code = `var process={};${code}`;
         }
-
-        if (/global|window/.test(code)) {
-            code = "var global=window=require('gulp-wxa-copy-npm/global');" + code;
-        }
         return code;
     },
+
     npmHack(filename, code) {
         switch (filename) {
             case 'lodash.js':
@@ -95,17 +99,20 @@ const gwcn = {
         let err = null;
         let dest_node_modules_dir = this.dest_node_modules_dir();
         let destDir = path.parse(destPath).dir;
-        console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        console.log('destPath', destPath)
         let libs = [];
+        let matchs = [];
+        code = this.fixGlobalAndWindow(code);
+
         code.replace(requireReg, (match, lib) => {
             libs.push(lib);
+            matchs.push(match);
         });
 
         for (let i = 0; i < libs.length; i++) {
             let lib = libs[i];
+            let match = matchs[i];
             if (err) {
-                return '';
+                break;
             }
             let ext = '';
 
@@ -114,11 +121,6 @@ const gwcn = {
             let dep;
 
             let relative = '';
-            console.log('lib', lib);
-
-            if (lib == '../core-js/symbol/iterator') {
-                let ttt = 111;
-            }
 
             if (lib[0] === '.') { // require('./something'');
                 if (!isNPM) {
@@ -137,6 +139,10 @@ const gwcn = {
                 if (pkg.browser && typeof pkg.browser === 'string') {
                     ext = pkg.browser;
                 }
+                if (ext.indexOf('./') == 0) {
+                    ext = ext.replace('./', '');
+                }
+                ext = path.sep + ext;
                 dep = path.join(this.src_node_modules_dir(), lib);
                 relative = path.relative(destDir, dest_node_modules_dir);
             } else { // require('babel-runtime/regenerator')
@@ -153,7 +159,7 @@ const gwcn = {
                 }
                 relative = path.relative(destDir, dest_node_modules_dir);
             }
-            resolved = path.join(relative, lib+ext);
+            resolved = path.join(relative, lib + ext);
 
             if (lib != resolved) {
                 config['gwcn-log'] && gutil.log(`Replace file: ${destDir} depences: from(${chalk.cyan(lib)}) to(${chalk.cyan(resolved)})`);
@@ -161,8 +167,13 @@ const gwcn = {
 
             let npmPathString = dep + ext;
             let npmPath = path.parse(npmPathString);
-            if (this.cache[destPath]) {
-                code = code.replace(lib, resolved);
+
+            let outPath = path.join(this.currentDir, config['gwcn-dest'], dest_node_modules_dir_name, npmPathString.replace(this.src_node_modules_dir(), ''));
+            config['gwcn-log'] && gutil.log(`Copy npm depences: from(${chalk.cyan(npmPathString)}) to(${chalk.cyan(outPath)}) ...`);
+
+            code = code.replace(match, `require('${resolved}')`);
+
+            if (this.cache[outPath]) {
                 continue;
             }
 
@@ -170,21 +181,10 @@ const gwcn = {
                 encoding: this.gulp.enc
             });
 
-            let outPath = path.join(this.currentDir, config['gwcn-dest'], dest_node_modules_dir_name, npmPathString.replace(this.src_node_modules_dir(), ''));
-            config['gwcn-log'] && gutil.log(`Copy npm depences: from(${chalk.cyan(npmPathString)}) to(${chalk.cyan(outPath)}) ...`);
-            console.log('outPath', outPath)
-            console.log('resolved', resolved)
-
-            code = code.replace(lib, resolved);
-
-            if (resolved.indexOf('symbol.js') > -1 || lib.indexOf('symbol.js') > -1 || code.indexOf('symbol.js') > -1) {
-                var aaa = 333;
-            }
-
             err = this.copyNPMDeps(depCode, outPath, npmPath.dir, true).err;
         }
 
-        if (isNPM && !this.cache[destPath]) {
+        if (isNPM && !this.cache[destPath] && !err) {
             code = this.npmHack(path.parse(destPath).base, code);
             code = this.fixNPM(code);
             code = this.doPlugins(code, destPath);
