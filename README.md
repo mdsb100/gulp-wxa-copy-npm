@@ -93,4 +93,4 @@ const task_babel_release = function() {
 ```
 
 ##Issues
-目前版本还是0.1.0，没有经过充分测试。欢迎大家提bug和pull request！
+目前版本还是0.1.1，没有经过充分测试。欢迎大家提bug和pull request！
