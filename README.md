@@ -35,6 +35,14 @@ gulp.task('babel', () =>
 
 ```
 
+在代码中:
+```javascript
+const moment = require('moment'); //NPM
+const util = require('./util');
+```
+
+注意项目中的代码一定要使用```require('./util')```或```require('../util/fetch')```这种形式。
+
 ## Installation
 ```shell
 $ npm install gulp-wxa-copy-npm --save-dev
