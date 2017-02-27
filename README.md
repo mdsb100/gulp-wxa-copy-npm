@@ -1,11 +1,13 @@
 # gulp-wxa-copy-npm
 微信小程序gulp插件，解决npm包管理和babel-runtime。可以使用诸如ES7，moment等。
 
+在package.json加入"babel-runtime"。需要自己写babel的options。这样就可以使用async await。具体配置参考gulp-babel就可以了。
+
 ## Usage
 In guilpfile.js
 ```javascript
-const babel = require("gulp-babel");
 const gulp = require("gulp");
+const babel = require("gulp-babel");
 const gwcn = require('gulp-wxa-copy-npm');
 const sourcemaps = require('gulp-sourcemaps');
 
