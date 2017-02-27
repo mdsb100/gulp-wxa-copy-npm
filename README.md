@@ -42,6 +42,10 @@ gulp.task('babel', () =>
 const moment = require('moment'); //NPM
 const util = require('./util');
 ```
+```javascript
+import config from './config'
+import common from '../common/fetch'
+```
 
 注意项目中的代码一定要使用```require('./util')```或```require('../util/fetch')```这种形式。
 
