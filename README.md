@@ -60,6 +60,14 @@ $ npm install gulp-wxa-copy-npm --save-dev
 
 但是自由是有代价的，很多东西你需要自己写。
 
+##Directory
+```
+|- dist
+|- src
+|- gulpfile.js
+\- package.json
+```
+
 ##Options
 - ```gwcn-src```默认是```'src'```。表示的是：源目录夹名。
 - ```gwcn-dest```默认是```'dist'```。表示的是：输出目录夹名。
