@@ -40,7 +40,7 @@ gulp.task('babel', () =>
 $ npm install gulp-wxa-copy-npm --save-dev
 ```
 
-## 为什么会有这个项目
+## Why
 首先感谢[labrador](https://github.com/maichong/labrador)和[wepy](https://github.com/wepyjs/wepy)参考了其中一些代码。这2个库很优秀！但是限制了我们。我们可以自己建gulpfile来使用stylus，imagemin等。可是最大的诉求是想用NPM包管理和ES7，没有这样的一个gulp插件。所以我就做了一个。
 
 
