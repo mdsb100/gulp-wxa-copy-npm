@@ -225,7 +225,6 @@ module.exports = function(options) {
 
     config = Object.assign(config, options);
     return through.obj(function(file, enc, callback) {
-        gutil.log(chalk.cyan('Copying npm depences...'));
         gwcn.gulp.file = file;
         gwcn.gulp.enc = enc;
         gwcn.gulp.callback = callback;
