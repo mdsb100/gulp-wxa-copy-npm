@@ -6,7 +6,7 @@
 如果想要使用async await，甚至是Decorator，具体只要参考babel配置就可以了。
 
 ## Usage
-In guilpfile.js
+In gulpfile.js
 ```javascript
 const gulp = require("gulp");
 const babel = require("gulp-babel");
