@@ -228,6 +228,7 @@ module.exports = function(options) {
         gwcn.gulp.file = file;
         gwcn.gulp.enc = enc;
         gwcn.gulp.callback = callback;
+        gwcn.cache = {};
         let sourceCode = file._contents.toString(enc);
         let {
             err,
