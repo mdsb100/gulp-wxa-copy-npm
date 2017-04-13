@@ -171,6 +171,8 @@ const gwcn = {
             let outPath = path.join(this.currentDir, config['gwcn-dest'], dest_node_modules_dir_name, npmPathString.replace(this.src_node_modules_dir(), ''));
             config['gwcn-log'] && gutil.log(`Copy npm depences: from(${chalk.cyan(npmPathString)}) to(${chalk.cyan(outPath)}) ...`);
 
+
+            resolved = resolved.replace(new RegExp('\\' + path.sep, 'g'), '/'); //Fix #1
             code = code.replace(match, `require('${resolved}')`);
 
             if (this.cache[outPath]) {

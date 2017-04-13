@@ -1,6 +1,6 @@
 {
   "name": "gulp-wxa-copy-npm",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "微信小程序gulp插件，解决npm包管理和babel-runtime",
   "main": "index.js",
   "scripts": {
