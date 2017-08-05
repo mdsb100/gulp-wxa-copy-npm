@@ -165,7 +165,7 @@ const gwcn = {
                 config['gwcn-log'] && gutil.log(`Replace file: ${destDir} depences: from(${chalk.cyan(lib)}) to(${chalk.cyan(resolved)})`);
             }
 
-            let npmPathString = dep + ext;
+            let npmPathString = dep.endsWith(ext) ? dep : dep + ext;
             let npmPath = path.parse(npmPathString);
 
             let outPath = path.join(this.currentDir, config['gwcn-dest'], dest_node_modules_dir_name, npmPathString.replace(this.src_node_modules_dir(), ''));
