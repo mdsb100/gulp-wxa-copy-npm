@@ -64,7 +64,7 @@ $ npm install gulp-wxa-copy-npm --save-dev
 
 但是自由是有代价的，很多东西你需要自己写。
 
-##Directory
+## Directory
 ```
 |- dist
 |- src
@@ -72,14 +72,14 @@ $ npm install gulp-wxa-copy-npm --save-dev
 \- package.json
 ```
 
-##Options
+## Options
 - ```gwcn-src```默认是```'src'```。表示的是：源目录夹名。
 - ```gwcn-dest```默认是```'dist'```。表示的是：输出目录夹名。
 - ```node_modules```默认是```'../node_modules'```。表示的是：源目录和node_modules相对路径。
 - ```gwcn-log```默认是```false```。表示的是：是否输出log。
 - ```plugins```。数组。
 
-##Plugin Example
+## Plugin Example
 ```javascript
 const guglify = through.obj(function(file, enc, callback) {
     let code = file._contents.toString(enc);
@@ -110,5 +110,5 @@ const task_babel_release = function() {
 
 ```
 
-##Issues
+## Issues
 目前版本还是0.1.3，没有经过充分测试。欢迎大家提bug和pull request！
